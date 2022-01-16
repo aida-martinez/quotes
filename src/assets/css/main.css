@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Keania+One&family=Lato:ital@0;1&display=swap');
+
+* {
+	outline: 0;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+html {
+	font-size: 1em;
+}
+
+body {
+	font-size: 100%;
+	font-family: 'Lato', sans-serif;
+	-webkit-backface-visibility: hidden;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+a img, :link img, :visited img {
+	border: 0;
+}
