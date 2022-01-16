@@ -105,9 +105,12 @@
 			},
 			getBackgroundImage(key){
 				unsplash.search
-				.getPhotos({ query: key, orientation: "landscape", page: 1, perPage: 1 })
+				.getPhotos({ query: key, orientation: "landscape", page: 1, perPage: 10 })
 				.then(result => {
-					this.picture = result.response.results[0]
+					// The api returns an array of picture, to not get always the same, we generate a random number
+					let getRandomNumber = Math.floor(Math.random() * result.response.results.length)
+
+					this.picture = result.response.results[getRandomNumber]
 				})
 				.catch(() => {
 					//console.log("something went wrong!");
