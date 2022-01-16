@@ -25,7 +25,7 @@
 		</main>
 
 		<footer class="site-footer">
-			<button  @click="getRandomQuote" class="button button--nuka">One more, please!</button>
+			<button  @click="getRandomQuote(true)" class="button button--nuka">One more, please!</button>
 		</footer>
 	</div>
 </template>
@@ -81,8 +81,25 @@
 					this.getBackgroundImage(quotes.keyword)
 				}
 			},
-			getRandomQuote(){
-				let selectedId = Math.floor(Math.random() * this.totalQuotes) + 1;
+			getRandomQuote(reset){
+				// If reset is true, we remove the param quote (which force the show of a quote with that ID)
+				if ( reset ){
+					if (location.href.includes('?')) { 
+						history.pushState({}, null, location.href.split('?')[0]); 
+					}
+				}
+
+				let uri        = window.location.search.substring(1); 
+				let params     = new URLSearchParams(uri)
+				let quoteId    = params.get("quote")
+				let selectedId = 0
+
+				
+				if ( quoteId && Number.isInteger(parseInt(quoteId)) && this.totalQuotes >= quoteId ){
+					selectedId = quoteId
+				} else {
+					selectedId = Math.floor(Math.random() * this.totalQuotes) + 1;
+				}
 
 				return this.getQuotesById( selectedId )
 			},
