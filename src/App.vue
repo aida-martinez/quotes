@@ -5,9 +5,9 @@
 			
 			<clock-locale></clock-locale>
 		</header>
-		
+
 		<main class="main" v-if="quote">
-			<blockquote>
+			<blockquote :id="`quote-${quote.id}`" :data-url="`${currentUrl}?quote=${quote.id}`">
 				{{quote.quote}}
 
 				<cite>{{ quote.by }}</cite>
@@ -42,7 +42,8 @@
 				quotes: null,
 				quote: null,
 				picture: null,
-				totalQuotes: null
+				totalQuotes: null,
+				currentUrl: window.location.href
 			}
 		},
 		components: {
