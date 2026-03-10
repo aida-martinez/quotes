@@ -33,7 +33,7 @@
 
 <script >
 	import ClockLocale from './components/clockLocale.vue'
-	import { supabase } from './utils/supabase'
+	import { tursoClient } from './utils/turso'
 	import { unsplash } from './utils/unsplash'
 
 	export default {
@@ -54,32 +54,25 @@
 		},
 		methods: {
 			async getQuotes() {
-				let { data: quotes, error } = await supabase
-				.from('quotes')
-				.select('*')
-
-				if ( error ){
-					//console.log(error);
-				}
-				else {
-					this.quotes = quotes
-					this.totalQuotes = quotes.length
+				try {
+					let { rows } = await tursoClient.execute('SELECT * FROM quotes')
+					this.quotes = rows
+					this.totalQuotes = rows.length
 					this.getRandomQuote()
+				} catch (error) {
+					//console.log(error);
 				}
 			},
 			async getQuotesById(id) {
-				let { data: quotes, error } = await supabase
-					.from('quotes')
-					.select('*')
-					.eq('id', id)
-					.single()
-
-				if ( error ){
+				try {
+					let { rows } = await tursoClient.execute({
+						sql: 'SELECT * FROM quotes WHERE id = ?',
+						args: [id]
+					})
+					this.quote = rows[0]
+					this.getBackgroundImage(this.quote.keyword)
+				} catch (error) {
 					//console.log(error);
-				}
-				else {
-					this.quote = quotes
-					this.getBackgroundImage(quotes.keyword)
 				}
 			},
 			getRandomQuote(reset){

@@ -1,16 +1,12 @@
 <template>
     <div class="clocks" v-show="time">
 		<div class="clock">
-			<div class="clock__location">Cambados</div>
+			<div class="clock__location">Spain</div>
 			<div class="clock__time">{{ time }}</div>
 		</div>
 		<div class="clock">
-			<div class="clock__location">London</div>
+			<div class="clock__location">UK</div>
 			<div class="clock__time">{{ timeLondon }}</div>
-		</div>
-		<div class="clock">
-			<div class="clock__location">Macau</div>
-			<div class="clock__time">{{ timeMacau }}</div>
 		</div>
     </div>  
 </template>
@@ -22,7 +18,6 @@
 				interval: null,
 				time: null,
 				timeLondon: null,
-				timeMacau: null,
 			}
 		},
 		beforeDestroy() {
@@ -34,7 +29,6 @@
 			this.interval = setInterval(() => {
 				this.time = Intl.DateTimeFormat('es-ES', { hour: 'numeric', minute: 'numeric', timeZone: 'Europe/Madrid' }).format()
 				this.timeLondon = Intl.DateTimeFormat('en-GB', { hour: 'numeric', minute: 'numeric', timeZone: 'Europe/London' }).format()
-				this.timeMacau = Intl.DateTimeFormat('cn-CN', { hour: 'numeric', minute: 'numeric', timeZone: 'Asia/Macau' }).format()
 			}, 1000)
 		}
 	}
