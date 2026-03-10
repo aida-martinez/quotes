@@ -60,7 +60,7 @@
 					this.totalQuotes = rows.length
 					this.getRandomQuote()
 				} catch (error) {
-					//console.log(error);
+					console.log(error);
 				}
 			},
 			async getQuotesById(id) {
