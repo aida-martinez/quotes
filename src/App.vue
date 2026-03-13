@@ -49,54 +49,65 @@
 		components: {
 			ClockLocale,
 		},
-		mounted () {
-			this.getQuotes()
-		},
+        mounted () {
+            this.getInitialQuote()
+        },
 		methods: {
-			async getQuotes() {
-				try {
-					let { rows } = await tursoClient.execute('SELECT * FROM quotes')
-					this.quotes = rows
-					this.totalQuotes = rows.length
-					this.getRandomQuote()
-				} catch (error) {
-					console.log(error);
-				}
-			},
-			async getQuotesById(id) {
-				try {
-					let { rows } = await tursoClient.execute({
-						sql: 'SELECT * FROM quotes WHERE id = ?',
-						args: [id]
-					})
-					this.quote = rows[0]
-					this.getBackgroundImage(this.quote.keyword)
-				} catch (error) {
-					//console.log(error);
-				}
-			},
-			getRandomQuote(reset){
-				// If reset is true, we remove the param quote (which force the show of a quote with that ID)
-				if ( reset ){
-					if (location.href.includes('?')) { 
-						history.pushState({}, null, location.href.split('?')[0]); 
-					}
-				}
-
-				let uri        = window.location.search.substring(1); 
-				let params     = new URLSearchParams(uri)
-				let quoteId    = params.get("quote")
-				let selectedId = 0
-
-				
-				if ( quoteId && Number.isInteger(parseInt(quoteId)) && this.totalQuotes >= quoteId ){
-					selectedId = quoteId
-				} else {
-					selectedId = Math.floor(Math.random() * this.totalQuotes) + 1;
-				}
-
-				return this.getQuotesById( selectedId )
-			},
+            async getQuotes() {
+                try {
+                    // Fetch a single random quote to minimize data transfer
+                    let { rows } = await tursoClient.execute({
+                        sql: 'SELECT id, quote, by, keyword FROM quotes ORDER BY RANDOM() LIMIT 1'
+                    })
+                    this.quote = rows[0]
+                    this.getBackgroundImage(this.quote.keyword)
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            async getInitialQuote(){
+                // On initial load, respect URL parameter if present
+                let uri        = window.location.search.substring(1);
+                let params     = new URLSearchParams(uri)
+                let quoteId    = params.get("quote")
+                if (quoteId && Number.isInteger(parseInt(quoteId))) {
+                    this.getQuoteById(parseInt(quoteId))
+                } else {
+                    this.getQuotes()
+                }
+            },
+            async getQuoteById(id){
+                // Fetch a single quote by its ID
+                try {
+                    let { rows } = await tursoClient.execute({
+                        sql: 'SELECT id, quote, by, keyword FROM quotes WHERE id = ?',
+                        args: [id]
+                    })
+                    this.quote = rows[0]
+                    if (this.quote) {
+                        this.getBackgroundImage(this.quote.keyword)
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            },
+            getRandomQuote(reset){
+                // If reset is true, we remove the param quote (which force the show of a quote with that ID)
+                if ( reset ){
+                    if (location.href.includes('?')) { 
+                        history.pushState({}, null, location.href.split('?')[0]); 
+                    }
+                }
+                // Fetch a new random quote or honor ID in URL on next load
+                // If a quote id is present in URL, fetch that one; otherwise fetch random
+                let uri        = window.location.search.substring(1);
+                let params     = new URLSearchParams(uri)
+                let quoteId    = params.get("quote")
+                if (quoteId && Number.isInteger(parseInt(quoteId))) {
+                    return this.getQuoteById(parseInt(quoteId))
+                }
+                return this.getQuotes()
+            },
 			getBackgroundImage(key){
 				unsplash.search
 				.getPhotos({ query: key, orientation: "landscape", page: 1, perPage: 10 })
